@@ -51,6 +51,104 @@ char riverInterpolation = 'l';
 
 // ----------------------------
 
+float eye_x = 550.0f;
+float eye_y = 250.0f;
+float eye_z = 100.0f;
+float look_x = 0.0f;
+float look_y = 250.0f;
+float look_z = -200.0f;
+float up_x = 0.0f;
+float up_y = 0.0f;
+float up_z = 50.0f;
+
+/**
+ * @brief A helper function that is used while panning/sliding in 'u' direction 
+ * 
+ * @param delU a parameter that signifies the amount of sliding to be done in 'u' direction
+ */
+void slide_u(float delU)
+{
+	double length = sqrt(pow(eye_x - look_x, 2) + pow(eye_y - look_y, 2) + pow(eye_z - look_z, 2));
+
+    double n_x = (look_x - eye_x) / length;
+    double n_y = (look_y - eye_y) / length;
+    double n_z = (look_z - eye_z) / length;
+    
+    double u_x = up_y*n_z - up_z*n_y;
+    double u_y = up_z*n_x - up_x*n_z;
+    double u_z = up_x*n_y - up_y*n_x;
+
+    eye_x += delU * u_x;
+    eye_y += delU * u_y;
+    eye_z += delU * u_z;
+	
+    look_x += delU * u_x;
+    look_y += delU * u_y;
+    look_z += delU * u_z;
+
+    glutPostRedisplay();
+}
+
+/**
+ * @brief A helper function that is used while zooming in 'n' direction 
+ * 
+ * @param delN a parameter that signifies the amount of zooming to be done in 'n' direction
+ */
+void zoom(float delN)
+{
+	double length = sqrt(pow(eye_x - look_x, 2) + pow(eye_y - look_y, 2) + pow(eye_z - look_z, 2));
+
+    double n_x = (look_x - eye_x) / length;
+    double n_y = (look_y - eye_y) / length;
+    double n_z = (look_z - eye_z) / length;
+    
+    double u_x = up_y*n_z - up_z*n_y;
+    double u_y = up_z*n_x - up_x*n_z;
+    double u_z = up_x*n_y - up_y*n_x;
+
+    eye_x += delN * n_x;
+    eye_y += delN * n_y;
+    eye_z += delN * n_z;
+
+    glutPostRedisplay();
+}
+
+/**
+ * @brief A function that resets to the initial view, wrt to all three characteristics: eye and look coordinates and the up vector  
+ * 
+ */
+void reset () {
+    eye_x = 550.0f;
+    eye_y = 250.0f;
+    eye_z = 100.0f;
+    look_x = 0.0f;
+    look_y = 250.0f;
+    look_z = -200.0f;
+    up_x = 0.0f;
+    up_y = 0.0f;
+    up_z = 50.0f;
+
+    glutPostRedisplay();
+}
+
+/**
+ * @brief A function that rotates the camera about the direction of 'v' vector
+ * 
+ * @param angle a parameter that signifies the angle (in degrees) to be yawed
+ */
+void yaw (float angle)
+{
+    float cs = cos(M_PI/180 * angle); 
+    float sn = sin(M_PI/180 * angle);
+
+    up_x = cs*up_x + sn*up_z;
+    up_z = -sn*up_x + cs*up_z;
+
+    look_x = cs*look_x + sn*look_z;
+    look_z = -sn*look_x + cs*look_z;
+
+    glutPostRedisplay();
+}
 
 // Function to generate Perlin noise in 3D
 double noise(int x, int y, int z, int noiseLimit) {
@@ -222,9 +320,46 @@ void init() {
     glClearColor(0.2, 0.7, 1.0, 1.0);
     glEnable(GL_DEPTH_TEST);
     gluPerspective(45.0, (double)width / (double)height, 1.0, 500.0);
-    gluLookAt(550.0, 250.0, 100.0, 
-    0.0, 250.0, -200.0, 
-    0.0, 0.0, 50.0);
+    gluLookAt(eye_x, eye_y, eye_z, 
+    look_x, look_y, look_z, 
+    up_x, up_y, up_z);
+}
+
+void SpecialInput (int key, int xMouse, int yMouse) {
+    switch (key) {
+        case GLUT_KEY_RIGHT:
+            slide_u(0.05f);
+            break;
+        case GLUT_KEY_LEFT:
+            slide_u(-0.05f);
+            break;
+        default:
+            break;
+    }
+}
+
+void keyInput (unsigned char key, int xMouse, int yMouse) {
+    switch (key) {
+        case '+':
+            // zoom(0.05f);
+            glTranslatef(0.0f, 0.0f, -0.05);
+            glTranslatef(-5, -5, -5);
+            break;
+        case '-':
+            zoom(-0.05f);
+            break;
+        case 'y':
+            yaw(5);
+            break;
+        case 'Y':
+            yaw(-5);
+            break;
+        case ' ':
+            reset();
+            break;
+        default:
+            break;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -236,6 +371,9 @@ int main(int argc, char** argv) {
     init();
 
     glutDisplayFunc([]() { renderTerrain(width, height); });
+
+    glutKeyboardFunc(keyInput);
+    glutSpecialFunc(SpecialInput);
 
     glutMainLoop();
 
