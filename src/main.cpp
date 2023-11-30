@@ -328,10 +328,12 @@ void init() {
 void SpecialInput (int key, int xMouse, int yMouse) {
     switch (key) {
         case GLUT_KEY_RIGHT:
+            // slide_u(2.0f);
             glTranslatef(0, -2, 0);
             glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT:
+            // slide_u(-2.0f);
             glTranslatef(0, 2, 0);
             glutPostRedisplay();
             break;
