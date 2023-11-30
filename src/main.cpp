@@ -10,10 +10,10 @@ const int width = 500;
 const int height = 500;
 
 int defaultNoiseLimit = 1;
-int defaultOctaves = 6;
-double defaultPersistence = 1;
+int defaultOctaves = 4;
+double defaultPersistence = 2;
 double defaultLacunarity = 0.3;
-char defaultInterpolation = 'l';
+char defaultInterpolation = 'p';
 
 // Pond definition -
 int pond_center_x = 300;
@@ -32,10 +32,13 @@ int mountain_center_y = 250;
 int mountain_radius = 70;
 
 int mountainNoiseLimit = 1;
-int mountainOctaves = 6;
-double mountainPersistence = 1;
+int mountainOctaves = 3;
+double mountainPersistence = 2;
+double mountainPersistence1 = 1.5;
+double mountainPersistence2 = 2;
+double mountainPersistence3 = 2.5;
 double mountainLacunarity = 0.3;
-char mountainInterpolation = 'l';
+char mountainInterpolation = 'p';
 
 // River definition -
 int river_x1 = 200;
@@ -257,10 +260,15 @@ void setColor(double perlinValue) {
         g = 1;
         b = 0.372;
     } 
-    else {    //blue
-        r = 0.078;
-        g = 0.604;
-        b = 0.82;
+    else if(perlinValue == -1){  // pond blue
+        r = 0.2;
+        g = 0.7;
+        b = 1;
+    }
+    else {    //grass green
+        r = 0.451;
+        g = 0.639;
+        b = 0.159;
         // r = 0.0;
         // g = 1;
         // b = 0.372;
@@ -273,8 +281,21 @@ bool pond(int x, int y) {
     return ((x - pond_center_x) * (x - pond_center_x) + (y - pond_center_y) * (y - pond_center_y) - pond_radius * pond_radius) <= 0;
 }
 
+double innerMountain1Radius = 0.75*mountain_radius;
+double innerMountain2Radius = 0.5*mountain_radius;
+double innerMountain3Radius = 0.25*mountain_radius;
+
 bool mountain(int x, int y) {
     return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - mountain_radius * mountain_radius) <= 0;
+}
+bool innerMountain1(int x, int y) {
+    return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - innerMountain1Radius*innerMountain1Radius) <= 0;
+}
+bool innerMountain2(int x, int y) {
+    return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - innerMountain2Radius*innerMountain2Radius) <= 0;
+}
+bool innerMountain3(int x, int y) {
+    return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - innerMountain3Radius*innerMountain3Radius) <= 0;
 }
 
 bool river(int x, int y) {
@@ -289,20 +310,44 @@ void renderTerrain(int width, int height) {
         for (int y = 0; y < height - 1; ++y) {
 
             double perlinValues[4];
-
+            bool isPond = false;
             if (pond(x,y)) {
-
+                isPond = true;
                 perlinValues[0] = 0;//perlin(x, y, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
                 perlinValues[1] = 0;//perlin(x + 1, y, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
                 perlinValues[2] = 0;//perlin(x, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
                 perlinValues[3] = 0;//perlin(x + 1, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
 
-            } else if (mountain(x,y)) {
+            } else if (innerMountain3(x,y)) {
 
-                perlinValues[0] = perlin(x, y, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
-                perlinValues[1] = perlin(x + 1, y, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
-                perlinValues[2] = perlin(x, y + 1, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
-                perlinValues[3] = perlin(x + 1, y + 1, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
+                perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence3, mountainLacunarity, mountainInterpolation);
+                perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence3, mountainLacunarity, mountainInterpolation);
+                perlinValues[2] = perlin(x, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence3, mountainLacunarity, mountainInterpolation);
+                perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence3, mountainLacunarity, mountainInterpolation);
+
+            }
+            else if (innerMountain2(x,y)) {
+
+                perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence2, mountainLacunarity, mountainInterpolation);
+                perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence2, mountainLacunarity, mountainInterpolation);
+                perlinValues[2] = perlin(x, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence2, mountainLacunarity, mountainInterpolation);
+                perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence2, mountainLacunarity, mountainInterpolation);
+
+            }
+            else if (innerMountain1(x,y)) {
+
+                perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence1, mountainLacunarity, mountainInterpolation);
+                perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence1, mountainLacunarity, mountainInterpolation);
+                perlinValues[2] = perlin(x, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence1, mountainLacunarity, mountainInterpolation);
+                perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence1, mountainLacunarity, mountainInterpolation);
+
+            }
+            else if (mountain(x,y)) {
+
+                perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence, mountainLacunarity, mountainInterpolation);
+                perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence, mountainLacunarity, mountainInterpolation);
+                perlinValues[2] = perlin(x, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence, mountainLacunarity, mountainInterpolation);
+                perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence, mountainLacunarity, mountainInterpolation);
 
             } else if (river(x,y)) {
 
@@ -320,7 +365,13 @@ void renderTerrain(int width, int height) {
 
             }
 
-            vector<double>colors;
+            if(isPond){
+                perlinValues[0] = -1;//perlin(x, y, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
+                perlinValues[1] = -1;//perlin(x + 1, y, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
+                perlinValues[2] = -1;//perlin(x, y + 1, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
+                perlinValues[3] = -1;//perlin(x + 1, y + 1, 0, mountainNoi
+            }
+
             // Draw the first triangle
             setColor(perlinValues[0]);
             glVertex3d(x, y, perlinValues[0]);
