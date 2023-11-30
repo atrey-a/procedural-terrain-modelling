@@ -61,18 +61,18 @@ double noise(int x, int y, int z, int noiseLimit) {
 
 // Function to interpolate between two values
 double interpolate(double a, double b, double t, char f) {
-    // double ft = t * 3.1415927;
-    // double f = (1.0 - cos(ft)) * 0.5;
-    // return a * (1.0 - f) + b * f;
-    if (f == 'l')
+    if (f == 's') // Sin-Cosine Interpolation
+        return a * cos(t) + b * sin(t);
+    else if (f == 'c') // Circular Interpolation
+        return a * cos(t) * cos(t) + b * sin(t) * sin(t);
+    else if (f == 'p') // Parabolic Interpolation
+        return a * (1 - t * t) + b * t;
+    else // Linear Interpolation
         return a * (1.0 - t) + b * t;
 }
 
 // Function to generate 3D Perlin noise
 double perlinCalculate(int x, int y, int z, int noiseLimit, char interpolationFunc) {
-    // x /= 0.2;
-    // y /= 0.2;
-    // z /= 2;
     double n = noise(x, y, z, noiseLimit);
     double i1 = interpolate(noise(x - 1, y, z, noiseLimit), noise(x + 1, y, z, noiseLimit), n, interpolationFunc);
     double i2 = interpolate(noise(x, y - 1, z, noiseLimit), noise(x, y + 1, z, noiseLimit), n, interpolationFunc);
