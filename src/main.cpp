@@ -90,6 +90,38 @@ void slide_u(float delU)
 }
 
 /**
+ * @brief A helper function that is used while panning/sliding in 'v' direction 
+ * 
+ * @param delV a parameter that signifies the amount of sliding to be done in 'v' direction
+ */
+void slide_v(float delV)
+{
+	double length = sqrt(pow(eye_x - look_x, 2) + pow(eye_y - look_y, 2) + pow(eye_z - look_z, 2));
+
+    double n_x = (look_x - eye_x) / length;
+    double n_y = (look_y - eye_y) / length;
+    double n_z = (look_z - eye_z) / length;
+    
+    double u_x = up_y*n_z - up_z*n_y;
+    double u_y = up_z*n_x - up_x*n_z;
+    double u_z = up_x*n_y - up_y*n_x;
+
+    double v_x = n_y*u_z - n_z*u_y;
+    double v_y = n_z*u_x - n_x*u_z;
+    double v_z = n_x*u_y - n_y*u_x;
+
+    eye_x += delV * v_x;
+    eye_y += delV * v_y;
+    eye_z += delV * v_z;
+	
+    look_x += delV * v_x;
+    look_y += delV * v_y;
+    look_z += delV * v_z;
+
+    glutPostRedisplay();
+}
+
+/**
  * @brief A helper function that is used while zooming in 'n' direction 
  * 
  * @param delN a parameter that signifies the amount of zooming to be done in 'n' direction
@@ -335,6 +367,16 @@ void SpecialInput (int key, int xMouse, int yMouse) {
         case GLUT_KEY_LEFT:
             // slide_u(-2.0f);
             glTranslatef(0, 2, 0);
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_UP:
+            // slide_v(0.05f);
+            glTranslatef(0, 0, -2);
+            glutPostRedisplay();
+            break;
+        case GLUT_KEY_DOWN:
+            // slide_v(-0.05f);
+            glTranslatef(0, 0, 2);
             glutPostRedisplay();
             break;
         default:
