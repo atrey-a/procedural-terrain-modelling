@@ -260,10 +260,10 @@ void renderTerrain(int width, int height) {
 
             if (pond(x,y)) {
 
-                perlinValues[0] = perlin(x, y, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
-                perlinValues[1] = perlin(x + 1, y, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
-                perlinValues[2] = perlin(x, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
-                perlinValues[3] = perlin(x + 1, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
+                perlinValues[0] = 0;//perlin(x, y, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
+                perlinValues[1] = 0;//perlin(x + 1, y, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
+                perlinValues[2] = 0;//perlin(x, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
+                perlinValues[3] = 0;//perlin(x + 1, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
 
             } else if (mountain(x,y)) {
 
@@ -281,10 +281,10 @@ void renderTerrain(int width, int height) {
 
             } else {
 
-                perlinValues[0] = perlin(x, y, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
-                perlinValues[1] = perlin(x + 1, y, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
-                perlinValues[2] = perlin(x, y + 1, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
-                perlinValues[3] = perlin(x + 1, y + 1, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
+                perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, defaultOctaves, defaultPersistence, defaultLacunarity, defaultInterpolation);
+                perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, defaultOctaves, defaultPersistence, defaultLacunarity, defaultInterpolation);
+                perlinValues[2] = perlin(x, y + 1, 0, defaultNoiseLimit, defaultOctaves, defaultPersistence, defaultLacunarity, defaultInterpolation);
+                perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, defaultOctaves, defaultPersistence, defaultLacunarity, defaultInterpolation);
 
             }
 
