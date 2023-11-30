@@ -328,10 +328,12 @@ void init() {
 void SpecialInput (int key, int xMouse, int yMouse) {
     switch (key) {
         case GLUT_KEY_RIGHT:
-            slide_u(0.05f);
+            glTranslatef(0, -2, 0);
+            glutPostRedisplay();
             break;
         case GLUT_KEY_LEFT:
-            slide_u(-0.05f);
+            glTranslatef(0, 2, 0);
+            glutPostRedisplay();
             break;
         default:
             break;
@@ -342,17 +344,23 @@ void keyInput (unsigned char key, int xMouse, int yMouse) {
     switch (key) {
         case '+':
             // zoom(0.05f);
-            glTranslatef(0.0f, 0.0f, -0.05);
-            glTranslatef(-5, -5, -5);
+            glTranslatef(2, 0, 0);
+            glutPostRedisplay();
             break;
         case '-':
-            zoom(-0.05f);
+            // zoom(-0.05f);
+            glTranslatef(-2, 0, 0);
+            glutPostRedisplay();
             break;
         case 'y':
-            yaw(5);
+            // yaw(5);
+            glRotatef(0.5, 0, 0, 1);
+            glutPostRedisplay();
             break;
         case 'Y':
-            yaw(-5);
+            // yaw(-5);
+            glRotatef(-0.5, 0, 0, 1);
+            glutPostRedisplay();
             break;
         case ' ':
             reset();
