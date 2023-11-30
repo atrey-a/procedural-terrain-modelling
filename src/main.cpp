@@ -398,12 +398,16 @@ void keyInput (unsigned char key, int xMouse, int yMouse) {
             break;
         case 'y':
             // yaw(5);
+            glTranslatef(eye_x, eye_y, eye_z);
             glRotatef(0.5, 0, 0, 1);
+            glTranslatef(-eye_x, -eye_y, -eye_z);
             glutPostRedisplay();
             break;
         case 'Y':
             // yaw(-5);
+            glTranslatef(eye_x, eye_y, eye_z);
             glRotatef(-0.5, 0, 0, 1);
+            glTranslatef(-eye_x, -eye_y, -eye_z);
             glutPostRedisplay();
             break;
         case ' ':
