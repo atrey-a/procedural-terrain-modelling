@@ -1,6 +1,7 @@
 #include <GL/glut.h>
 #include <cmath>
 #include <vector>
+#include <cstdlib>
 using namespace std;
 
 // -------DEFINITIONS--------
@@ -35,9 +36,9 @@ int mountainNoiseLimit = 1;
 int mountainOctaves = 3;
 double mountainPersistence = 2;
 double mountainPersistence1 = 1.5;
-double mountainPersistence2 = 2;
-double mountainPersistence3 = 2.5;
-double mountainLacunarity = 0.3;
+double mountainPersistence2 = 1.75;
+double mountainPersistence3 = 1.8;
+double mountainLacunarity = 0.4;
 char mountainInterpolation = 'p';
 
 // River definition -
@@ -230,7 +231,13 @@ double perlin(int x, int y, int z, int noiseLimit, int octaves, double persisten
 
 void setColor(double perlinValue) {
     double r, g, b;
-    if (perlinValue > defaultNoiseLimit*10*0.75) { // dark brown
+    
+    if (perlinValue > defaultNoiseLimit*10*0.9) { // dark brown
+        r = 0.29;
+        g = 0.224;
+        b = 0.027;
+    }
+    else if (perlinValue > defaultNoiseLimit*10*0.75) { // dark brown
         r = 0.341;
         g = 0.224;
         b = 0.051;
@@ -266,9 +273,21 @@ void setColor(double perlinValue) {
         b = 1;
     }
     else {    //grass green
-        r = 0.451;
-        g = 0.639;
-        b = 0.159;
+
+        int random = rand() % 2;
+        if(random == 1){
+            r = 0.451;
+            g = 0.639;
+            b = 0.159;
+        }
+        else{
+            r = 0.131;
+            g = 0.739;
+            b = 0.259;
+            // r = 0.451;
+            // g = 0.639;
+            // b = 0.159;
+        }
         // r = 0.0;
         // g = 1;
         // b = 0.372;
