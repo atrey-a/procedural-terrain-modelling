@@ -214,6 +214,7 @@ double perlinCalculate(int x, int y, int z, int noiseLimit, char interpolationFu
     return interpolate(interpolate(i1, i2, n, interpolationFunc), i3, n, interpolationFunc);
 }
 
+// Generates perlin noise
 double perlin(int x, int y, int z, int noiseLimit, int octaves, double persistence, double lacunarity, char interpolationFunc){
     double total = 0.0;
     double frequency = 2;
@@ -229,6 +230,7 @@ double perlin(int x, int y, int z, int noiseLimit, int octaves, double persisten
     return total;
 }
 
+// Determines colour based on height
 void setColor(double perlinValue) {
     double r, g, b;
     
@@ -296,6 +298,7 @@ void setColor(double perlinValue) {
     glColor3d(r,g,b);
 }
 
+// Coordinates for pond
 bool pond(int x, int y) {
     return ((x - pond_center_x) * (x - pond_center_x) + (y - pond_center_y) * (y - pond_center_y) - pond_radius * pond_radius) <= 0;
 }
@@ -304,19 +307,27 @@ double innerMountain1Radius = 0.75*mountain_radius;
 double innerMountain2Radius = 0.5*mountain_radius;
 double innerMountain3Radius = 0.25*mountain_radius;
 
+// Coordinates for mountain
 bool mountain(int x, int y) {
     return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - mountain_radius * mountain_radius) <= 0;
 }
+
+// Coordinates for inner-mountain1
 bool innerMountain1(int x, int y) {
     return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - innerMountain1Radius*innerMountain1Radius) <= 0;
 }
+
+// Coordinates for inner-mountain2
 bool innerMountain2(int x, int y) {
     return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - innerMountain2Radius*innerMountain2Radius) <= 0;
 }
+
+// Coordinates for inner-mountain3
 bool innerMountain3(int x, int y) {
     return ((x - mountain_center_x) * (x - mountain_center_x) + (y - mountain_center_y) * (y - mountain_center_y) - innerMountain3Radius*innerMountain3Radius) <= 0;
 }
 
+// Coordinates for river
 bool river(int x, int y) {
     return ((x - pond_center_x) * (x - pond_center_x) + (y - pond_center_y) * (y - pond_center_y) - pond_radius * pond_radius) <= 0;
 }
@@ -330,6 +341,7 @@ void renderTerrain(int width, int height) {
 
             double perlinValues[4];
             bool isPond = false;
+            //for tge ponf
             if (pond(x,y)) {
                 isPond = true;
                 perlinValues[0] = 0;//perlin(x, y, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
@@ -337,7 +349,7 @@ void renderTerrain(int width, int height) {
                 perlinValues[2] = 0;//perlin(x, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
                 perlinValues[3] = 0;//perlin(x + 1, y + 1, 0, pondNoiseLimit, pondOctaves, pondPersistence, pondLacunarity, pondInterpolation);
 
-            } else if (innerMountain3(x,y)) {
+            } else if (innerMountain3(x,y)) {   // inner mountain ring 1
 
                 perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence3, mountainLacunarity, mountainInterpolation);
                 perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence3, mountainLacunarity, mountainInterpolation);
@@ -345,7 +357,7 @@ void renderTerrain(int width, int height) {
                 perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence3, mountainLacunarity, mountainInterpolation);
 
             }
-            else if (innerMountain2(x,y)) {
+            else if (innerMountain2(x,y)) { // inner mountain ring 2
 
                 perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence2, mountainLacunarity, mountainInterpolation);
                 perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence2, mountainLacunarity, mountainInterpolation);
@@ -353,7 +365,7 @@ void renderTerrain(int width, int height) {
                 perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence2, mountainLacunarity, mountainInterpolation);
 
             }
-            else if (innerMountain1(x,y)) {
+            else if (innerMountain1(x,y)) { // the innermost mountain
 
                 perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence1, mountainLacunarity, mountainInterpolation);
                 perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence1, mountainLacunarity, mountainInterpolation);
@@ -368,14 +380,16 @@ void renderTerrain(int width, int height) {
                 perlinValues[2] = perlin(x, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence, mountainLacunarity, mountainInterpolation);
                 perlinValues[3] = perlin(x + 1, y + 1, 0, defaultNoiseLimit, mountainOctaves, defaultPersistence*mountainPersistence, mountainLacunarity, mountainInterpolation);
 
-            } else if (river(x,y)) {
+            } 
+            // else if (river(x,y)) {    // future work
 
-                perlinValues[0] = perlin(x, y, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
-                perlinValues[1] = perlin(x + 1, y, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
-                perlinValues[2] = perlin(x, y + 1, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
-                perlinValues[3] = perlin(x + 1, y + 1, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
+            //     perlinValues[0] = perlin(x, y, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
+            //     perlinValues[1] = perlin(x + 1, y, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
+            //     perlinValues[2] = perlin(x, y + 1, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
+            //     perlinValues[3] = perlin(x + 1, y + 1, 0, riverNoiseLimit, riverOctaves, riverPersistence, riverLacunarity, riverInterpolation);
 
-            } else {
+            // } 
+            else {
 
                 perlinValues[0] = perlin(x, y, 0, defaultNoiseLimit, defaultOctaves, defaultPersistence, defaultLacunarity, defaultInterpolation);
                 perlinValues[1] = perlin(x + 1, y, 0, defaultNoiseLimit, defaultOctaves, defaultPersistence, defaultLacunarity, defaultInterpolation);
@@ -385,30 +399,30 @@ void renderTerrain(int width, int height) {
             }
 
             if(isPond){
-                perlinValues[0] = -1;//perlin(x, y, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
-                perlinValues[1] = -1;//perlin(x + 1, y, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
-                perlinValues[2] = -1;//perlin(x, y + 1, 0, mountainNoiseLimit, mountainOctaves, mountainPersistence, mountainLacunarity, mountainInterpolation);
-                perlinValues[3] = -1;//perlin(x + 1, y + 1, 0, mountainNoi
+                perlinValues[0] = -1;
+                perlinValues[1] = -1;
+                perlinValues[2] = -1;
+                perlinValues[3] = -1;
             }
 
             // Draw the first triangle
-            setColor(perlinValues[0]);
+            setColor(perlinValues[0]);  // Set the color based on the height
             glVertex3d(x, y, perlinValues[0]);
 
-            setColor(perlinValues[1]);
+            setColor(perlinValues[1]);  // Set the color based on the height
             glVertex3d(x + 1, y, perlinValues[1]);
 
-            setColor(perlinValues[2]);
+            setColor(perlinValues[2]);  // Set the color based on the height
             glVertex3d(x, y + 1, perlinValues[2]);
 
             // Draw the second triangle
-            setColor(perlinValues[0]);
+            setColor(perlinValues[0]);  // Set the color based on the height
             glVertex3d(x + 1, y, perlinValues[1]);
 
-            setColor(perlinValues[1]);
+            setColor(perlinValues[1]);  // Set the color based on the height
             glVertex3d(x + 1, y + 1, perlinValues[3]);
 
-            setColor(perlinValues[2]);
+            setColor(perlinValues[2]);  // Set the color based on the height
             glVertex3d(x, y + 1, perlinValues[2]);
 
         }
@@ -427,6 +441,7 @@ void init() {
     up_x, up_y, up_z);
 }
 
+// Function for special keyboard inputs
 void SpecialInput (int key, int xMouse, int yMouse) {
     switch (key) {
         case GLUT_KEY_RIGHT:
@@ -454,6 +469,7 @@ void SpecialInput (int key, int xMouse, int yMouse) {
     }
 }
 
+// Function for normal keyboard inputs
 void keyInput (unsigned char key, int xMouse, int yMouse) {
     switch (key) {
         case '+':
